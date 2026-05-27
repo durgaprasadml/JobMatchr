@@ -1,0 +1,14 @@
+fastapi
+uvicorn
+pydantic
+pydantic-settings
+email-validator
+sqlalchemy
+redis
+google-generativeai
+python-multipart
+pymupdf
+python-docx
+requests
+beautifulsoup4
+python-dotenv

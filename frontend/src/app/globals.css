@@ -1,0 +1,175 @@
+@import "tailwindcss";
+
+:root {
+  --background: #09090b; /* Zinc 950 */
+  --foreground: #fafafa; /* Zinc 50 */
+  --card: #121214;
+  --card-border: rgba(255, 255, 255, 0.06);
+  --accent: #6366f1; /* Indigo 500 */
+  --accent-glow: rgba(99, 102, 241, 0.15);
+  --accent-secondary: #a855f7; /* Purple 500 */
+  --muted: #71717a; /* Zinc 500 */
+  --muted-bg: #18181b; /* Zinc 900 */
+  --success: #10b981; /* Emerald 500 */
+  --warning: #f59e0b; /* Amber 500 */
+  --destructive: #ef4444; /* Red 500 */
+}
+
+/* Light mode overrides */
+.light-theme {
+  --background: #f8fafc; /* Slate 50 */
+  --foreground: #0f172a; /* Slate 900 */
+  --card: #ffffff;
+  --card-border: rgba(15, 23, 42, 0.08);
+  --accent: #4f46e5; /* Indigo 600 */
+  --accent-glow: rgba(79, 70, 229, 0.1);
+  --accent-secondary: #9333ea; /* Purple 600 */
+  --muted: #64748b; /* Slate 500 */
+  --muted-bg: #f1f5f9; /* Slate 100 */
+  --success: #059669; /* Emerald 600 */
+  --warning: #d97706; /* Amber 600 */
+  --destructive: #dc2626; /* Red 600 */
+}
+
+@theme {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-border: var(--card-border);
+  --color-accent: var(--accent);
+  --color-accent-secondary: var(--accent-secondary);
+  --color-muted: var(--muted);
+  --color-muted-bg: var(--muted-bg);
+  --color-success: var(--success);
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  overflow-x: hidden;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Premium Scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--background);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--muted-bg);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--muted);
+}
+
+/* Glassmorphism Panels */
+.glass-panel {
+  background: rgba(18, 18, 20, 0.6);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--card-border);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
+}
+
+.light-theme .glass-panel {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--card-border);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05);
+}
+
+/* Radial Glows */
+.radial-glow {
+  background: radial-gradient(circle at 50% 50%, var(--accent-glow) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+/* AI Scanning Animation Keyframes */
+@keyframes scan-line {
+  0% {
+    top: 0%;
+  }
+  50% {
+    top: 100%;
+  }
+  100% {
+    top: 0%;
+  }
+}
+
+.animate-scan {
+  position: relative;
+  overflow: hidden;
+}
+
+.animate-scan::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: linear-gradient(to right, transparent, var(--accent), var(--accent-secondary), transparent);
+  box-shadow: 0 0 10px var(--accent);
+  animation: scan-line 3s infinite linear;
+}
+
+/* Subtle Shimmer for Skeletons */
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.shimmer-bg {
+  background: linear-gradient(90deg, var(--muted-bg) 25%, var(--card-border) 50%, var(--muted-bg) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite linear;
+}
+
+/* Modern dialog animations using starting-style */
+dialog[open] {
+  opacity: 1;
+  transform: scale(1);
+  
+  @starting-style {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+}
+
+dialog {
+  opacity: 0;
+  transform: scale(0.95);
+  transition: opacity 0.3s ease-out, transform 0.3s ease-out, display 0.3s allow-discrete, overlay 0.3s allow-discrete;
+}
+
+dialog::backdrop {
+  background-color: rgba(0, 0, 0, 0);
+  backdrop-filter: blur(0px);
+  transition: background-color 0.3s ease-out, backdrop-filter 0.3s ease-out, display 0.3s allow-discrete, overlay 0.3s allow-discrete;
+}
+
+dialog[open]::backdrop {
+  background-color: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(4px);
+  
+  @starting-style {
+    background-color: rgba(0, 0, 0, 0);
+    backdrop-filter: blur(0px);
+  }
+}
+
+/* Soft Edges Content Fading */
+.soft-fade-bottom {
+  mask-image: linear-gradient(to bottom, black 60%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, black 60%, transparent 100%);
+}
