@@ -2,6 +2,7 @@ import hashlib
 import logging
 import os
 import tempfile
+import time
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form, status, Query
 from sqlalchemy.orm import Session
 from typing import List, Optional
@@ -89,6 +90,7 @@ async def upload_resume(
     session_id: Optional[str] = Form(None),
     db: Session = Depends(get_db)
 ):
+    start_time = time.time()
     # Verify file extension
     ext = file.filename.split(".")[-1].lower()
     if ext not in ["pdf", "docx"]:
@@ -100,12 +102,16 @@ async def upload_resume(
     temp_path = None
     try:
         # Create a temporary file securely
+        t_save_start = time.time()
         with tempfile.NamedTemporaryFile(delete=False, suffix=f".{ext}") as temp_file:
             content = await file.read()
             temp_file.write(content)
             temp_path = temp_file.name
+        t_save_duration = time.time() - t_save_start
+        logger.info(f"Temp file saved in {t_save_duration:.3f}s: {temp_path}")
 
         # Parse text using PyMuPDF / python-docx (includes validation & cleanup)
+        t_extract_start = time.time()
         try:
             text = parse_resume_file(temp_path, file.filename)
         except ValueError as ve:
@@ -113,16 +119,27 @@ async def upload_resume(
                 status_code=400,
                 detail=str(ve)
             )
+        t_extract_duration = time.time() - t_extract_start
+        logger.info(f"Text extracted and cleaned in {t_extract_duration:.3f}s. Char count: {len(text)}")
         
         # Parse text using Gemini API
+        t_gemini_start = time.time()
         parsed_data = gemini_service.parse_resume(text, file.filename)
+        t_gemini_duration = time.time() - t_gemini_start
+        logger.info(f"Gemini parsed structured data in {t_gemini_duration:.3f}s")
         
         # Store in session (expires automatically in 30 mins)
+        t_session_start = time.time()
         if not session_id:
             # Create new session UUID
             session_id = session_service.create_session(parsed_data)
         else:
             session_service.set_session(session_id, parsed_data)
+        t_session_duration = time.time() - t_session_start
+        logger.debug(f"Session stored in {t_session_duration:.3f}s")
+        
+        total_duration = time.time() - start_time
+        logger.info(f"Total upload & processing pipeline completed in {total_duration:.3f}s (session_id={session_id})")
             
         return {
             "success": True,
@@ -159,6 +176,7 @@ def match_jobs(
     Main pipeline: Resume session → JSearch API → Local matching → Ranked results.
     Gemini is NOT called here — it was already called during resume upload.
     """
+    start_time = time.time()
     # 1. Get resume data from session
     resume_data = session_service.get_session(session_id)
     if not resume_data:
@@ -175,23 +193,47 @@ def match_jobs(
             is_premium = user.is_premium
 
     # 3. Fetch live jobs from JSearch (with caching)
+    t_jsearch_start = time.time()
+    is_fallback = False
     try:
         raw_jobs = jsearch_service.search_jobs_for_resume(resume_data)
     except Exception as e:
         logger.error(f"JSearch pipeline error: {e}")
         raw_jobs = []
+    t_jsearch_duration = time.time() - t_jsearch_start
+    logger.info(f"JSearch fetched jobs in {t_jsearch_duration:.3f}s. Count: {len(raw_jobs)}")
 
     if not raw_jobs:
-        return MatchJobsResponse(
-            success=True,
-            total_jobs=0,
-            query_used=jsearch_service.build_search_queries(resume_data),
-            jobs=[],
-            cached=False,
-        )
+        # Fall back to local database jobs if no live jobs returned or JSearch failed
+        t_fallback_start = time.time()
+        logger.info("JSearch returned no live jobs. Falling back to local database jobs...")
+        db_jobs = db.query(Job).all()
+        # Convert SQLAlchemy objects to dictionaries for match_jobs_to_resume
+        raw_jobs = []
+        for job in db_jobs:
+            raw_jobs.append({
+                "title": job.title,
+                "company_name": job.company_name,
+                "company_logo": job.company_logo,
+                "location": job.location,
+                "salary": job.salary,
+                "job_type": job.job_type,
+                "workplace_type": job.workplace_type,
+                "experience_level": job.experience_level,
+                "role_category": job.role_category,
+                "company_type": job.company_type,
+                "required_skills": job.required_skills,
+                "description": job.description,
+                "apply_url": job.apply_url,
+            })
+        is_fallback = True
+        logger.info(f"Database jobs fallback retrieval completed in {time.time() - t_fallback_start:.3f}s. Count: {len(raw_jobs)}")
 
     # 4. Run local matching engine (no external AI calls)
+    t_matching_start = time.time()
     matched_jobs = match_jobs_to_resume(resume_data, raw_jobs, is_premium)
+    t_matching_duration = time.time() - t_matching_start
+    logger.info(f"Local matching engine finished in {t_matching_duration:.3f}s")
 
     # 5. Build response
     queries_used = jsearch_service.build_search_queries(resume_data)
@@ -217,12 +259,15 @@ def match_jobs(
             is_locked=job.get("is_locked", False),
         ))
 
+    total_duration = time.time() - start_time
+    logger.info(f"Total match-jobs duration: {total_duration:.3f}s. Fallback used: {is_fallback}")
+
     return MatchJobsResponse(
         success=True,
         total_jobs=len(live_responses),
         query_used=queries_used,
         jobs=live_responses,
-        cached=False,
+        cached=is_fallback,
     )
 
 @router.get("/jobs", response_model=List[JobResponse])
