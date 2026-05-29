@@ -1,28 +1,30 @@
 @import "tailwindcss";
 
+@import "tailwindcss";
+
 :root {
-  --background: #09090b; /* Zinc 950 */
-  --foreground: #fafafa; /* Zinc 50 */
-  --card: #121214;
-  --card-border: rgba(255, 255, 255, 0.06);
+  --background: #050505;
+  --foreground: #fafafa;
+  --card: #0B0B0F;
+  --card-border: rgba(255, 255, 255, 0.08);
   --accent: #6366f1; /* Indigo 500 */
-  --accent-glow: rgba(99, 102, 241, 0.15);
+  --accent-glow: rgba(99, 102, 241, 0.08);
   --accent-secondary: #a855f7; /* Purple 500 */
   --muted: #71717a; /* Zinc 500 */
-  --muted-bg: #18181b; /* Zinc 900 */
+  --muted-bg: #111118; /* Elevated Surface */
   --success: #10b981; /* Emerald 500 */
   --warning: #f59e0b; /* Amber 500 */
   --destructive: #ef4444; /* Red 500 */
 }
 
-/* Light mode overrides */
+/* Light mode fallback theme - kept dark premium as primary but supporting clean light theme */
 .light-theme {
   --background: #f8fafc; /* Slate 50 */
   --foreground: #0f172a; /* Slate 900 */
   --card: #ffffff;
   --card-border: rgba(15, 23, 42, 0.08);
   --accent: #4f46e5; /* Indigo 600 */
-  --accent-glow: rgba(79, 70, 229, 0.1);
+  --accent-glow: rgba(79, 70, 229, 0.05);
   --accent-secondary: #9333ea; /* Purple 600 */
   --muted: #64748b; /* Slate 500 */
   --muted-bg: #f1f5f9; /* Slate 100 */
@@ -46,9 +48,23 @@
 body {
   background-color: var(--background);
   color: var(--foreground);
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   overflow-x: hidden;
   transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Custom grid background pattern */
+.bg-grid-pattern {
+  background-size: 40px 40px;
+  background-image: 
+    linear-gradient(to right, rgba(255, 255, 255, 0.015) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
+}
+
+.light-theme .bg-grid-pattern {
+  background-image: 
+    linear-gradient(to right, rgba(0, 0, 0, 0.02) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0, 0, 0, 0.02) 1px, transparent 1px);
 }
 
 /* Premium Scrollbars */
@@ -60,8 +76,11 @@ body {
   background: var(--background);
 }
 ::-webkit-scrollbar-thumb {
-  background: var(--muted-bg);
+  background: rgba(255, 255, 255, 0.06);
   border-radius: 9999px;
+}
+.light-theme ::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.1);
 }
 ::-webkit-scrollbar-thumb:hover {
   background: var(--muted);
@@ -69,19 +88,17 @@ body {
 
 /* Glassmorphism Panels */
 .glass-panel {
-  background: rgba(18, 18, 20, 0.6);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  background: rgba(11, 11, 15, 0.7);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   border: 1px solid var(--card-border);
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
 }
 
 .light-theme .glass-panel {
   background: rgba(255, 255, 255, 0.7);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   border: 1px solid var(--card-border);
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05);
 }
 
 /* Radial Glows */
@@ -113,9 +130,9 @@ body {
   position: absolute;
   left: 0;
   width: 100%;
-  height: 4px;
+  height: 2px;
   background: linear-gradient(to right, transparent, var(--accent), var(--accent-secondary), transparent);
-  box-shadow: 0 0 10px var(--accent);
+  box-shadow: 0 0 8px var(--accent);
   animation: scan-line 3s infinite linear;
 }
 
@@ -130,9 +147,9 @@ body {
 }
 
 .shimmer-bg {
-  background: linear-gradient(90deg, var(--muted-bg) 25%, var(--card-border) 50%, var(--muted-bg) 75%);
+  background: linear-gradient(90deg, var(--card) 25%, var(--muted-bg) 50%, var(--card) 75%);
   background-size: 200% 100%;
-  animation: shimmer 1.5s infinite linear;
+  animation: shimmer 1.8s infinite linear;
 }
 
 /* Modern dialog animations using starting-style */
@@ -142,25 +159,25 @@ dialog[open] {
   
   @starting-style {
     opacity: 0;
-    transform: scale(0.95);
+    transform: scale(0.97);
   }
 }
 
 dialog {
   opacity: 0;
-  transform: scale(0.95);
-  transition: opacity 0.3s ease-out, transform 0.3s ease-out, display 0.3s allow-discrete, overlay 0.3s allow-discrete;
+  transform: scale(0.97);
+  transition: opacity 0.25s ease-out, transform 0.25s ease-out, display 0.25s allow-discrete, overlay 0.25s allow-discrete;
 }
 
 dialog::backdrop {
   background-color: rgba(0, 0, 0, 0);
   backdrop-filter: blur(0px);
-  transition: background-color 0.3s ease-out, backdrop-filter 0.3s ease-out, display 0.3s allow-discrete, overlay 0.3s allow-discrete;
+  transition: background-color 0.25s ease-out, backdrop-filter 0.25s ease-out, display 0.25s allow-discrete, overlay 0.25s allow-discrete;
 }
 
 dialog[open]::backdrop {
   background-color: rgba(0, 0, 0, 0.7);
-  backdrop-filter: blur(4px);
+  backdrop-filter: blur(8px);
   
   @starting-style {
     background-color: rgba(0, 0, 0, 0);
@@ -168,8 +185,14 @@ dialog[open]::backdrop {
   }
 }
 
-/* Soft Edges Content Fading */
+/* Soft Edges Content Fading - derived from modern web guidance */
 .soft-fade-bottom {
-  mask-image: linear-gradient(to bottom, black 60%, transparent 100%);
-  -webkit-mask-image: linear-gradient(to bottom, black 60%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, black 50%, transparent 100%);
+  mask-image: linear-gradient(to bottom, black 50%, transparent 100%);
 }
+
+.soft-fade-horizontal {
+  -webkit-mask-image: linear-gradient(to right, transparent, black 15%, black 85%, transparent);
+  mask-image: linear-gradient(to right, transparent, black 15%, black 85%, transparent);
+}
+

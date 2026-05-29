@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useRef, useState } from "react";
-import { UploadCloud, FileText, CheckCircle, ShieldAlert, AlertCircle } from "lucide-react";
+import { UploadCloud, FileText, CheckCircle, ShieldAlert, AlertCircle, Sparkles, ShieldCheck } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface UploadAreaProps {
   onUploadSuccess: (sessionId: string, resumeData: any) => void;
@@ -13,12 +14,12 @@ export default function UploadArea({ onUploadSuccess, apiUrl }: UploadAreaProps)
   const [dragActive, setDragActive] = useState(false);
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState(0);
-  const [statusMessage, setStatusMessage] = useState("Uploading resume...");
+  const [statusMessage, setStatusMessage] = useState("Extracting Skills...");
   const [error, setError] = useState<string | null>(null);
 
   const simulateProgress = (onFinish: () => void) => {
     setProgress(0);
-    setStatusMessage("Uploading resume...");
+    setStatusMessage("Extracting Skills...");
     
     const interval = setInterval(() => {
       setProgress((prev) => {
@@ -27,21 +28,19 @@ export default function UploadArea({ onUploadSuccess, apiUrl }: UploadAreaProps)
           return 95;
         }
         
-        const next = prev + Math.floor(Math.random() * 15) + 5;
-        if (next < 20) {
-          setStatusMessage("Reading document structure...");
-        } else if (next < 40) {
-          setStatusMessage("Extracting skills & experience...");
-        } else if (next < 60) {
-          setStatusMessage("Searching live Indian jobs...");
-        } else if (next < 80) {
-          setStatusMessage("Calculating AI match scores...");
+        const next = prev + Math.floor(Math.random() * 10) + 4;
+        if (next < 25) {
+          setStatusMessage("Extracting Skills...");
+        } else if (next < 50) {
+          setStatusMessage("Understanding Experience...");
+        } else if (next < 75) {
+          setStatusMessage("Matching Live Jobs...");
         } else {
-          setStatusMessage("Finalizing ATS report...");
+          setStatusMessage("Ranking Opportunities...");
         }
         return next;
       });
-    }, 300);
+    }, 250);
 
     return () => {
       clearInterval(interval);
@@ -50,10 +49,9 @@ export default function UploadArea({ onUploadSuccess, apiUrl }: UploadAreaProps)
   };
 
   const uploadFile = async (file: File) => {
-    // Validate type
     const ext = file.name.split(".").pop()?.toLowerCase();
     if (ext !== "pdf" && ext !== "docx") {
-      setError("Supported file types are PDF and DOCX only.");
+      setError("Supported formats are PDF and DOCX only.");
       return;
     }
 
@@ -63,7 +61,7 @@ export default function UploadArea({ onUploadSuccess, apiUrl }: UploadAreaProps)
     let apiCompleted = false;
     const cleanup = simulateProgress(() => {
       setProgress(100);
-      setStatusMessage("Analysis complete!");
+      setStatusMessage("Optimization Complete!");
     });
 
     try {
@@ -81,15 +79,13 @@ export default function UploadArea({ onUploadSuccess, apiUrl }: UploadAreaProps)
         throw new Error(result.detail || "Error scanning resume");
       }
 
-      // Finish progress animation
       apiCompleted = true;
       setProgress(100);
-      setStatusMessage("Analysis complete!");
+      setStatusMessage("Optimization Complete!");
       
-      // Delay success trigger slightly for visual pacing
       setTimeout(() => {
         onUploadSuccess(result.session_id, result.data);
-      }, 500);
+      }, 600);
       
     } catch (err: any) {
       setError(err.message || "Failed to process resume. Please try again.");
@@ -128,92 +124,118 @@ export default function UploadArea({ onUploadSuccess, apiUrl }: UploadAreaProps)
     }
   };
 
-  const triggerInputClick = () => {
-    fileInputRef.current?.click();
-  };
-
   return (
-    <div className="w-full">
-      {!loading ? (
-        <div
-          onDragEnter={handleDrag}
-          onDragOver={handleDrag}
-          onDragLeave={handleDrag}
-          onDrop={handleDrop}
-          onClick={triggerInputClick}
-          className={`flex flex-col items-center justify-center rounded-2xl border-2 border-dashed p-8 sm:p-12 cursor-pointer transition-all duration-300 ${
-            dragActive
-              ? "border-accent bg-accent/5 scale-[1.01]"
-              : "border-card-border bg-card/40 hover:bg-card-border/10 hover:border-accent/40"
-          }`}
-        >
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept=".pdf,.docx"
-            onChange={handleFileChange}
-            className="hidden"
-          />
+    <div className="w-full max-w-2xl mx-auto">
+      <AnimatePresence mode="wait">
+        {!loading ? (
+          <motion.div
+            key="upload-zone"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.3 }}
+            onDragEnter={handleDrag}
+            onDragOver={handleDrag}
+            onDragLeave={handleDrag}
+            onDrop={handleDrop}
+            onClick={() => fileInputRef.current?.click()}
+            className={`group flex flex-col items-center justify-center rounded-2xl border border-dashed p-8 sm:p-12 cursor-pointer transition-all duration-300 relative overflow-hidden ${
+              dragActive
+                ? "border-accent bg-accent/5 shadow-[0_0_20px_rgba(99,102,241,0.15)]"
+                : "border-white/[0.08] bg-[#0B0B0F] hover:bg-[#111118]/80 hover:border-accent/40"
+            }`}
+          >
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".pdf,.docx"
+              onChange={handleFileChange}
+              className="hidden"
+            />
 
-          <div className="flex h-14 w-14 items-center justify-center rounded-full bg-accent/10 text-accent border border-accent/20 mb-4 shadow-inner shadow-accent/5">
-            <UploadCloud className="h-7 w-7" />
-          </div>
+            {/* Accent light highlight */}
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-40 h-20 bg-accent/5 blur-2xl pointer-events-none rounded-full" />
 
-          <h3 className="text-lg font-bold text-center">
-            Upload your resume
-          </h3>
-          <p className="mt-1 text-sm text-muted text-center max-w-sm">
-            Drag and drop your file here, or click to browse. Supports PDF & DOCX formats.
-          </p>
+            <motion.div 
+              animate={dragActive ? { scale: 1.1 } : { scale: 1 }}
+              className="flex h-12 w-12 items-center justify-center rounded-xl bg-white/[0.02] text-accent border border-white/[0.08] mb-5 shadow-inner transition-colors group-hover:border-accent/30 group-hover:text-accent-secondary"
+            >
+              <UploadCloud className="h-6 w-6" />
+            </motion.div>
 
-          {/* Privacy Disclaimer */}
-          <div className="mt-6 flex items-center gap-1.5 rounded-full bg-muted-bg px-4 py-1 text-xs border border-card-border text-muted">
-            <CheckCircle className="h-3.5 w-3.5 text-success" />
-            <span>Your resume is processed securely and never permanently stored.</span>
-          </div>
-
-          {error && (
-            <div className="mt-4 flex items-center gap-2 rounded-lg bg-destructive/10 text-destructive border border-destructive/20 p-3 text-xs">
-              <AlertCircle className="h-4 w-4 shrink-0" />
-              <span>{error}</span>
-            </div>
-          )}
-        </div>
-      ) : (
-        /* Premium AI Scanning Progress Screen */
-        <div className="rounded-2xl border border-card-border glass-panel p-8 sm:p-12 text-center relative overflow-hidden animate-scan">
-          {/* Accent secondary glow */}
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 bg-accent-secondary/10 blur-3xl pointer-events-none rounded-full" />
-          
-          <div className="relative z-10 flex flex-col items-center">
-            {/* Spinning scanner icon */}
-            <div className="relative mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-tr from-accent to-accent-secondary text-white shadow-xl shadow-accent/20">
-              <FileText className="h-8 w-8 animate-pulse" />
-              <div className="absolute inset-0 rounded-2xl border border-white/20 animate-ping" />
-            </div>
-
-            <h3 className="text-xl font-extrabold tracking-tight">
-              {statusMessage}
+            <h3 className="text-sm font-bold text-white tracking-tight">
+              Upload Resume
             </h3>
-            
-            {/* Progress Bar Container */}
-            <div className="mt-6 w-full max-w-md rounded-full bg-muted-bg border border-card-border p-1 shadow-inner">
-              <div
-                className="h-2 rounded-full bg-gradient-to-r from-accent to-accent-secondary shadow-lg shadow-accent/40 transition-all duration-300 ease-out"
-                style={{ width: `${progress}%` }}
-              />
-            </div>
-            
-            <span className="mt-2 text-sm font-extrabold text-accent">
-              {progress}%
-            </span>
-            
-            <p className="mt-4 text-xs text-muted max-w-xs leading-relaxed">
-              Our advanced AI parser is parsing document structures, matching skills, and analyzing job fit.
+            <p className="mt-1.5 text-xs text-zinc-400 text-center max-w-sm leading-relaxed">
+              Drag and drop your file here, or click to browse. <br/>Supports PDF and DOCX formats.
             </p>
-          </div>
-        </div>
-      )}
+
+            {/* Privacy indicator */}
+            <div className="mt-6 flex items-center gap-1.5 rounded-full bg-[#111118] px-3.5 py-1 text-[10px] font-bold border border-white/[0.06] text-zinc-400">
+              <ShieldCheck className="h-3.5 w-3.5 text-emerald-500" />
+              <span>Resume is temporarily processed and never stored.</span>
+            </div>
+
+            {error && (
+              <motion.div 
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="mt-4 flex items-center gap-2 rounded-xl bg-destructive/10 text-destructive border border-destructive/20 p-3 text-xs"
+              >
+                <AlertCircle className="h-4 w-4 shrink-0" />
+                <span className="font-semibold">{error}</span>
+              </motion.div>
+            )}
+          </motion.div>
+        ) : (
+          /* Premium AI Scanning Progress Screen */
+          <motion.div
+            key="loading-zone"
+            initial={{ opacity: 0, scale: 0.98 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.98 }}
+            transition={{ duration: 0.4 }}
+            className="rounded-2xl border border-white/[0.08] bg-[#0B0B0F] p-8 sm:p-12 text-center relative overflow-hidden animate-scan shadow-2xl"
+          >
+            {/* Glow orb */}
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-40 h-40 bg-accent-secondary/5 blur-3xl pointer-events-none rounded-full" />
+            
+            <div className="relative z-10 flex flex-col items-center">
+              
+              <div className="relative mb-5 flex h-14 w-14 items-center justify-center rounded-xl bg-gradient-to-tr from-accent to-accent-secondary text-white shadow-xl shadow-accent/20">
+                <FileText className="h-7 w-7 animate-pulse" />
+                <div className="absolute inset-0 rounded-xl border border-white/20 animate-ping opacity-60" />
+              </div>
+
+              <span className="inline-flex items-center gap-1 text-[9px] font-black tracking-widest text-accent bg-accent/15 border border-accent/25 px-2.5 py-0.5 rounded-full uppercase mb-2">
+                <Sparkles className="h-3 w-3 fill-accent" /> AI ANALYZER ACTIVATED
+              </span>
+
+              <h3 className="text-base font-extrabold tracking-tight text-white h-6">
+                {statusMessage}
+              </h3>
+              
+              {/* Progress Bar Container */}
+              <div className="mt-6 w-full max-w-xs rounded-full bg-white/[0.02] border border-white/[0.06] p-1 shadow-inner">
+                <motion.div
+                  className="h-1.5 rounded-full bg-gradient-to-r from-accent via-accent to-accent-secondary shadow-md shadow-accent/40"
+                  style={{ width: `${progress}%` }}
+                  layoutId="progress-bar"
+                  transition={{ type: "spring", stiffness: 80, damping: 15 }}
+                />
+              </div>
+              
+              <span className="mt-2 text-[10px] font-black text-accent">
+                {progress}%
+              </span>
+              
+              <p className="mt-4 text-[10px] text-zinc-500 max-w-xs leading-relaxed font-semibold">
+                Parsing schemas, extracting technical skills, identifying experience tags, and searching open matching roles...
+              </p>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
