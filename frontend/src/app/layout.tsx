@@ -2,12 +2,12 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "JobMatchr | AI-Powered Resume Matching & Discovery",
-  description: "Upload your resume and instantly discover matching jobs using AI-powered resume analysis and intelligent job matching. Modern personal career platform for students, freshers, and professionals.",
-  keywords: "AI job matching, resume parser, ATS score, resume optimization, career insights, smart jobs, job portal",
+  title: "JobMatchr | Intelligent Career Discovery & Resume Matching",
+  description: "Upload your resume and instantly discover matching jobs using advanced resume analysis and intelligent job matching. Modern personal career operating system for students, freshers, and professionals.",
+  keywords: "job matching, resume parser, ATS score, resume optimization, career insights, smart jobs, job portal",
   openGraph: {
-    title: "JobMatchr | AI-Powered Resume Matching & Discovery",
-    description: "Upload your resume and instantly discover matching jobs using AI-powered resume analysis.",
+    title: "JobMatchr | Intelligent Career Discovery & Resume Matching",
+    description: "Upload your resume and instantly discover matching jobs using advanced resume analysis.",
     type: "website",
   }
 };

@@ -208,7 +208,7 @@ export default function UploadArea({ onUploadSuccess, apiUrl }: UploadAreaProps)
               </div>
 
               <span className="inline-flex items-center gap-1 text-[9px] font-black tracking-widest text-accent bg-accent/15 border border-accent/25 px-2.5 py-0.5 rounded-full uppercase mb-2">
-                <Sparkles className="h-3 w-3 fill-accent" /> AI ANALYZER ACTIVATED
+                <Sparkles className="h-3 w-3 fill-accent" /> MATCH ENGINE ACTIVATED
               </span>
 
               <h3 className="text-base font-extrabold tracking-tight text-white h-6">

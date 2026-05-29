@@ -142,6 +142,9 @@ export default function Dashboard() {
         const params = new URLSearchParams();
         params.append("session_id", currentSessionId);
         if (emailStr) params.append("email", emailStr);
+        Object.entries(currentFilters).forEach(([key, val]) => {
+          if (val) params.append(key, val);
+        });
 
         const response = await fetch(`${API_URL}/match-jobs?${params.toString()}`, {
           method: "POST",
@@ -348,7 +351,7 @@ export default function Dashboard() {
                       : "text-zinc-500 hover:text-zinc-300"
                   }`}
                 >
-                  <span>AI Matching Feed</span>
+                  <span>Matching Feed</span>
                   {sessionId && (
                     <span className="ml-2 rounded-full bg-accent/10 border border-accent/20 px-2 py-0.2 text-[9px] font-black text-accent">
                       {jobs.length}
@@ -378,7 +381,7 @@ export default function Dashboard() {
                   </button>
                 )}
 
-                {/* Mobile/Tablet AI Profile Tab */}
+                {/* Mobile/Tablet Profile Tab */}
                 {sessionId && (
                   <button
                     onClick={() => setActiveTab("profile")}
@@ -388,7 +391,7 @@ export default function Dashboard() {
                         : "text-zinc-500 hover:text-zinc-300"
                     }`}
                   >
-                    <span>AI Profile Insights</span>
+                    <span>Profile Insights</span>
                     {activeTab === "profile" && (
                       <motion.span layoutId="tab-underline" className="absolute bottom-0 left-0 right-0 h-0.5 bg-accent" />
                     )}
@@ -485,7 +488,7 @@ export default function Dashboard() {
                           
                           <div className="space-y-1.5 z-10">
                             <p className="text-sm font-black text-white tracking-tight flex items-center gap-1.5">
-                              <Zap className="h-4 w-4 text-accent fill-accent" /> Unlock {lockedCount} additional AI-matched opportunities
+                              <Zap className="h-4 w-4 text-accent fill-accent" /> Unlock {lockedCount} additional matched opportunities
                             </p>
                             <p className="text-xs text-zinc-400 font-semibold">
                               View detailed ATS match breakdowns, core skill gaps, and access direct application links.

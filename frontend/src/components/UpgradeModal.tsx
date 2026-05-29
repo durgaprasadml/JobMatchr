@@ -83,7 +83,7 @@ export default function UpgradeModal({ isOpen, onClose, onUpgradeSuccess }: Upgr
     "Tailored cover letter and resume bullet generator",
     "Interactive skill gap analysis with study resource suggestions",
     "Custom job listing alerts via dashboard feeds",
-    "Deep AI match reasonings & contextual highlights"
+    "Granular match reasoning & contextual highlights"
   ];
 
   return (

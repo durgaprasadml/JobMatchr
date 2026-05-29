@@ -79,7 +79,7 @@ export default function Home() {
     },
     {
       title: "Semantic Skill-Gap Mapping",
-      description: "Don't just search keywords. Our AI maps the contextual relationship of your engineering stack and highlights critical missing dependencies.",
+      description: "Don't just search keywords. Our matching engine maps the contextual relationship of your engineering stack and highlights critical missing dependencies.",
       icon: Cpu,
       badge: "Semantic Matching",
       color: "from-purple-500/20 to-purple-500/5",
@@ -98,10 +98,10 @@ export default function Home() {
   const workflowSteps = [
     {
       title: "Semantic Analysis",
-      desc: "Our AI breaks your resume into a clean JSON structure of technical strengths, soft skills, and credentials.",
+      desc: "Our match engine analyzes your resume into a clean JSON structure of technical strengths, soft skills, and credentials.",
       content: (
         <div className="bg-[#111118]/80 border border-white/[0.06] rounded-xl p-5 font-mono text-[11px] leading-relaxed text-zinc-300">
-          <div className="text-zinc-500">// AI Parsing Output</div>
+          <div className="text-zinc-500">// Extracted Profile Schema</div>
           <div>{"{"}</div>
           <div className="pl-4"><span className="text-indigo-400">"candidate"</span>: "Alex Rivers",</div>
           <div className="pl-4"><span className="text-indigo-400">"experience_level"</span>: "Mid-Senior",</div>
@@ -147,7 +147,7 @@ export default function Home() {
             <div className="h-9 w-9 rounded-full border-2 border-indigo-500 flex items-center justify-center text-[10px] font-black text-indigo-400 bg-indigo-500/5 shadow-[0_0_8px_rgba(99,102,241,0.2)]">96%</div>
           </div>
           <p className="text-[10px] leading-relaxed text-zinc-300 bg-white/[0.02] border border-white/[0.04] p-2.5 rounded-lg">
-            <span className="font-extrabold text-indigo-400">AI Match:</span> Strong alignment with your custom React frameworks and server components experience.
+            <span className="font-extrabold text-indigo-400">Match Insight:</span> Strong alignment with your custom React frameworks and server components experience.
           </p>
         </div>
       )
@@ -196,7 +196,7 @@ export default function Home() {
 
           {/* Subheading */}
           <p className="mx-auto mt-6 max-w-2xl text-base sm:text-lg text-zinc-400 leading-relaxed">
-            An AI career operating system built around your skills. Upload your resume to benchmark your stack, resolve hidden ATS filters, and unlock direct, live job matches.
+            An intelligent career operating system built around your skills. Upload your resume to benchmark your stack, resolve hidden ATS filters, and unlock direct, live job matches.
           </p>
 
           {/* CTA */}
@@ -479,7 +479,7 @@ export default function Home() {
               <ul className="mt-8 space-y-4">
                 {[
                   "Unlock 100+ matching vacancies (no blurs)",
-                  "Granular AI match reasoning & contextual flags",
+                  "Granular match reasoning & contextual flags",
                   "ATS compliance analysis & scoring reports",
                   "Missing skill gap alerts & reference manuals",
                   "Custom job alerts & automated dashboard feeds",
